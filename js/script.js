@@ -1,4 +1,5 @@
-urlCartas = "http://localhost:8000/Food/"
+// urlCartas = "http://localhost:8000/Food/"
+urlCartas = "https://api-tienda-app.herokuapp.com/productos/"
 urlOne = "https://clothes-edwin.herokuapp.com/Clothes/"
 
 const getData = async (url) => {
@@ -21,10 +22,10 @@ function pintarCartas(data) {
   let divCartas = document.getElementById('cartas');
   divCartas.innerHTML = ''
   data.forEach(element => {
-    const { name, img, price, id } = element;
+    const { name, img, price, id, discount } = element;
     cartas.innerHTML += `
         <div class="card" style="width: 13rem;">
-        <div class="descuento fw-bold">${price}% dto.</div>
+        <div class="descuento fw-bold">${discount} dto.</div>
 
         <div class="padreImg">
         <img src="${img}" width="100%"class="card-img-top">
