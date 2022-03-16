@@ -12,14 +12,7 @@ const getData = async (url) => {
 addEventListener("DOMContentLoaded", async () => {
   const data = await getData("https://api-tienda-app.herokuapp.com/productos/");
   pintarCartas(data);
-  let shop_cart = document.querySelector("#shop-cart");
-  let carrito = JSON.parse(localStorage.getItem("carrito"));
-  if (carrito) {
-    shop_cart.innerHTML = `<span class="fa-solid fa-cart-shopping btnCar"></span>[${carrito.length}]`;
-  } else {
-    shop_cart.innerHTML = `<span class="fa-solid fa-cart-shopping btnCar"></span>`;
-  }
-});
+})
 
 // pintarCartas
 function pintarCartas(data) {
