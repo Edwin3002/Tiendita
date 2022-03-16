@@ -1,6 +1,3 @@
-urlCartas = "http://localhost:8000/Food/";
-urlOne = "https://clothes-edwin.herokuapp.com/Clothes/";
-
 const getData = async (url) => {
   const resp = await fetch(url);
   const data = resp.json();
