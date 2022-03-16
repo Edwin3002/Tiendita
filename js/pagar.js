@@ -77,4 +77,6 @@ addEventListener('DOMContentLoaded', () => {
         total+=price;
         counter+=1;
     });
+    let payButton = document.querySelector("#pay-button");
+    payButton.innerHTML = `[${carrito.length}] Pagar $${total}`
 })
