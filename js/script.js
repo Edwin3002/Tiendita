@@ -1,5 +1,5 @@
-urlCartas = "http://localhost:8000/Food/"
-urlOne = "https://clothes-edwin.herokuapp.com/Clothes/"
+urlCartas = "http://localhost:8000/Food/";
+urlOne = "https://clothes-edwin.herokuapp.com/Clothes/";
 
 const getData = async (url) => {
   const resp = await fetch(url);
@@ -8,19 +8,23 @@ const getData = async (url) => {
   return data;
 };
 
-
-document.addEventListener('DOMContentLoaded', async () => {
-  const data = await getData(urlCartas);
-  pintarCartas(data)
-})
-
+addEventListener("DOMContentLoaded", async () => {
+  const data = await getData("https://api-tienda-app.herokuapp.com/productos");
+  pintarCartas(data);
+  let shop_cart = document.querySelector("#shop-cart");
+  let carrito = JSON.parse(localStorage.getItem("carrito"));
+  if (carrito) {
+    shop_cart.innerHTML = `<span class="fa-solid fa-cart-shopping btnCar"></span>[${carrito.length}]`;
+  } else {
+    shop_cart.innerHTML = `<span class="fa-solid fa-cart-shopping btnCar"></span>`;
+  }
+});
 
 // pintarCartas
 function pintarCartas(data) {
-  console.log(data)
-  let divCartas = document.getElementById('cartas');
-  divCartas.innerHTML = ''
-  data.forEach(element => {
+  let divCartas = document.getElementById("cartas");
+  divCartas.innerHTML = "";
+  data.forEach((element) => {
     const { name, img, price, id } = element;
     cartas.innerHTML += `
         <div class="card" style="width: 13rem;">
@@ -36,23 +40,21 @@ function pintarCartas(data) {
           
         </div>
       </div>
-        `
+        `;
   });
 }
 
-
 // ver mas local storage modal
 function saveLocalS(id) {
-  localStorage.setItem('llave', id)
-  console.log(id)
+  localStorage.setItem("llave", id);
+  console.log(id);
 }
-
 
 // pintar carta en el modal
 async function pintarSola(id) {
-  url1 = (urlCartas + id)
+  url1 = "https://api-tienda-app.herokuapp.com/productos/" + id;
   const f = await getData(url1);
-  let space = document.getElementById('verSola')
+  let space = document.getElementById("verSola");
   space.innerHTML = `
         <div class="modal-header">
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -77,7 +79,7 @@ async function pintarSola(id) {
                               <option value="verde">verde (7 días)</option>
                             </select>
                             <div class="btnPesoAdd">                          
-                              <input type="number" id="peso" class=" peso" placeholder="Cantidad en U. " required>
+                              <input type="number" id="peso" class=" peso" placeholder="Cantidad en U. " value="1" required>
                               <button type="button"  class="btn btnAdd w-50" onclick="guardarCarrito('${id}')">Agregar</button>
                             </div>
                         </form>
@@ -85,24 +87,142 @@ async function pintarSola(id) {
                 </div>
             </div>
         </div>
-  `
+  `;
 }
 
+const guardarCarrito = async (id) => {
+  // let madurez = document.getElementById('madurez').value;
+  // let peso = document.getElementById('peso').value;
+  // // localStorage.setItem('carrito', id)
+  // // console.log(id)
+  // // console.log(madurez)
+  // // console.log(peso)
+  // // guardarLocalS(id, madurez, peso)
 
-function guardarCarrito(id){
-  let madurez = document.getElementById('madurez').value;
-  let peso = document.getElementById('peso').value;
-  localStorage.setItem('carrito', id)
-  console.log(id)
-  console.log(madurez)
-  console.log(peso)
-  guardarLocalS(id, madurez, peso)
+  let item = await getData(
+    `https://api-tienda-app.herokuapp.com/productos/${id}`
+  );
+
+  let carrito_actual = JSON.parse(localStorage.getItem("carrito"));
+
   
-}
+
+  if (!localStorage.getItem("carrito")) {
+    let carrito = [item];
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "Producto agregado al carrito!",
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  } else {
+    let existe = carrito_actual.find((e) => e.name === item.name);
+    if (!existe) {
+      carrito_actual.push(item);
+      localStorage.setItem("carrito", JSON.stringify(carrito_actual));
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Producto agregado al carrito!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      let shop_cart = document.querySelector("#shop-cart");
+      shop_cart.innerHTML = `<span class="fa-solid fa-cart-shopping btnCar"></span>[${carrito_actual.length}]`;
+    } else {
+      Swal.fire({
+        position: "center",
+        icon: "error",
+        title: "El producto ya esta en el carrito!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    }
+    // console.log(`Tipo: ${typeof carrito_actual} Contenido: ${carrito_actual}`);
+  }
+};
 
 // ver mas local storage carrito
-function guardarLocalS(id, madurez,peso) {
-  localStorage.setItem('llave', id)
-  console.log(id)
+function guardarLocalS(id, madurez, peso) {
+  localStorage.setItem("llave", id);
+  console.log(id);
 }
 
+const add = (id) => {
+  document.querySelector(`#cantidad${id}`).textContent =
+    parseInt(document.querySelector(`#cantidad${id}`).textContent) + 1;
+};
+
+const delete_ = (id) => {
+  if (
+    parseInt(document.querySelector(`#cantidad${id}`).textContent) - 1 !==
+    0
+  ) {
+    document.querySelector(`#cantidad${id}`).textContent =
+      parseInt(document.querySelector(`#cantidad${id}`).textContent) - 1;
+  }
+};
+
+let shopCartButton = document.querySelector("#shop-cart");
+
+shopCartButton.addEventListener("click", () => {
+  const shopCart = JSON.parse(localStorage.getItem("carrito"));
+  const shopCartHTML = document.querySelector("#shopCartModal");
+  if (!shopCart) {
+    shopCartHTML.innerHTML = ``;
+    document.querySelector(".shopCartButtons").style.display = `none`;
+    document.querySelector(".emptyShopCart").style.display = `flex`;
+  } else {
+    document.querySelector(".emptyShopCart").style.display = `none`;
+    document.querySelector(".shopCartButtons").style.display = `flex`;
+    shopCartHTML.innerHTML = ``;
+    let total = 0;
+    let counter = 1;
+    shopCart.forEach((element) => {
+      const { id, name, price, img } = element;
+      shopCartHTML.innerHTML += `
+      <div id="shop" class="card-body">
+      <div class="shop-1">
+          <img src="${img}" alt="" width="70">
+          <div class="shop-1-content">
+              <h3>${name}</h3>
+              <p>$${price}</p>
+          </div>
+      </div>
+      <div class="shop-2">
+          <p class="shop-2-input" id="cantidad${counter}" type="number">1</p>
+          <button class="btn btn-dark shop-button" onclick="add(${counter})">+</button>
+          <button class="btn btn-danger shop-button" onclick="delete_(${counter})">-</button>
+      </div>
+      </div>
+      `;
+      total += price;
+      counter += 1;
+    });
+    let shopButton = document.querySelector("#shop-button");
+    shopButton.innerHTML = `[${shopCart.length}] Ir a pagar $${total}`;
+    shopButton.addEventListener("click", () => {
+      window.location.href = `../html/pagar.html`;
+    });
+  }
+});
+
+let cleanButton = document.querySelector("#cleanCarrito");
+
+cleanButton.addEventListener("click", () => {
+  localStorage.removeItem("carrito");
+  document.querySelector("#shopCartModal").innerHTML = ``;
+  document.querySelector(".emptyShopCart").style.display = `flex`;
+  document.querySelector(".shopCartButtons").style.display = `none`;
+  Swal.fire({
+    position: "center",
+    icon: "success",
+    title: "Carrito vaciado",
+    showConfirmButton: false,
+    timer: 1500,
+  });
+  let shop_cart = document.querySelector("#shop-cart");
+  shop_cart.innerHTML = `<span class="fa-solid fa-cart-shopping btnCar"></span>`;
+});
