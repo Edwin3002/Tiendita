@@ -95,6 +95,7 @@ const guardarCarrito = async (id) => {
   let item = await getData(
     `https://api-tienda-app.herokuapp.com/productos/${id}`
   );
+  
   let carrito_actual = JSON.parse(localStorage.getItem("carrito"));
 
   if (!localStorage.getItem("carrito")) {
