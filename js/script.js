@@ -91,13 +91,6 @@ async function pintarSola(id) {
 }
 
 const guardarCarrito = async (id) => {
-  // let madurez = document.getElementById('madurez').value;
-  // let peso = document.getElementById('peso').value;
-  // // localStorage.setItem('carrito', id)
-  // // console.log(id)
-  // // console.log(madurez)
-  // // console.log(peso)
-  // // guardarLocalS(id, madurez, peso)
 
   let item = await getData(
     `https://api-tienda-app.herokuapp.com/productos/${id}`
